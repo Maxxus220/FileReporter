@@ -24,10 +24,25 @@ from curses.ascii import isalpha
 import sys
 import os
 
+def iswordseparator(char):
+    asciiValue = ord(char)
+    if asciiValue == ord('\t') or asciiValue == ord('\n') \
+        or asciiValue == ord(' ') or asciiValue == ord('\r'):
+        return True
+    else:
+        return False
+
+def isignoredchar(char):
+    asciiValue = ord(char)
+    if (asciiValue >= 0 and asciiValue <= 32) or (asciiValue == 127):
+        return True
+    else:
+        return False
+
 def isfigure(char):
     asciiValue = ord(char)
-    if (asciiValue >= 33 and asciiValue <= 47) or (asciiValue >= 58 and asciiValue <= 64) \
-        or (asciiValue >= 91 and asciiValue <= 96) or (asciiValue >= 123 and asciiValue <= 126):
+    if (asciiValue >= ord('!') and asciiValue <= ord('/')) or (asciiValue >= ord(':') and asciiValue <= ord('@')) \
+        or (asciiValue >= ord('[') and asciiValue <= ord('`')) or (asciiValue >= ord('{') and asciiValue <= ord('~')):
             return True
     else:
         return False
@@ -43,10 +58,24 @@ def getReportData(filePath):
     
     with open(filePath, 'r') as f:
         for line in f:
+            
+            currentWordSize = 0
+            inWord = False
+            
             for char in line:
+                
+                dontCountChar = isignoredchar(char)
+                
                 if isalpha(char):
                     numLetters += 1
-                elif
+                    inWord = True
+                elif isfigure(char):
+                    numFigures += 1
+                elif not dontCountChar:
+                    numOtherCharacters += 1
+                    
+                if not dontCountChar:
+                    numChars += 1
                 
     
     
