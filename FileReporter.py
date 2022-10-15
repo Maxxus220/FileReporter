@@ -24,6 +24,12 @@ from curses.ascii import isalpha
 import sys
 import os
 
+def updateWordsOfSize(numWordsOfSize, wordSize):
+    try:
+        numWordsOfSize[wordSize] = numWordsOfSize[wordSize] + 1
+    except:
+        numWordsOfSize[wordSize] = 0
+
 def iswordseparator(char):
     asciiValue = ord(char)
     if asciiValue == ord('\t') or asciiValue == ord('\n') \
@@ -54,7 +60,7 @@ def getReportData(filePath):
     numFigures = 0
     numOtherCharacters = 0
     numWords = 0
-    numWordsOfSize = list()
+    numWordsOfSize = dict()
     
     with open(filePath, 'r') as f:
         for line in f:
@@ -68,6 +74,7 @@ def getReportData(filePath):
                 
                 if isalpha(char):
                     numLetters += 1
+                    currentWordSize += 1
                     inWord = True
                 elif isfigure(char):
                     numFigures += 1
@@ -76,11 +83,13 @@ def getReportData(filePath):
                     
                 if not dontCountChar:
                     numChars += 1
-                
-    
-    
-    # TODO: Check if char is letter/figure/other character
-    
+                    
+                if inWord and iswordseparator(char):
+                    numWords += 1
+                    updateWordsOfSize(numWordsOfSize, currentWordSize)
+                    currentWordSize = 0
+                    inWord = False
+                    
     # TODO: Add logic for checking word count
     
     # TODO: Return dictionary of each count
