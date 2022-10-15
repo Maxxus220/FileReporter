@@ -1,11 +1,36 @@
 #!/usr/bin/env
 """
-TODO: Add file header comment
+Program that takes one command line argument, a file path, then opens that file
+and creates a report of the form:
+
+File name: D:\temp\file.txt
+Number of lines: 85
+Number of characters (total): 1441
+Number of letters: 782
+Number of figures: 17
+Number of other characters: 642
+Number of words: 195
+Number of 1 letter words: 56
+Number of 2 letters words: 27
+[...]
+Number of 16 letters words: 2
+Number of 19 letters words: 1
+
+under the name TODO.txt inside of the Reports folder
 """
 __author__ = "Michael Feist"
 
+from curses.ascii import isalpha
 import sys
 import os
+
+def isfigure(char):
+    asciiValue = ord(char)
+    if (asciiValue >= 33 and asciiValue <= 47) or (asciiValue >= 58 and asciiValue <= 64) \
+        or (asciiValue >= 91 and asciiValue <= 96) or (asciiValue >= 123 and asciiValue <= 126):
+            return True
+    else:
+        return False
 
 def getReportData(filePath):
     numLines = 0
@@ -16,12 +41,14 @@ def getReportData(filePath):
     numWords = 0
     numWordsOfSize = list()
     
-    with open(filePath) as f:
+    with open(filePath, 'r') as f:
         for line in f:
             for char in line:
+                if isalpha(char):
+                    numLetters += 1
+                elif
                 
     
-    # TODO: Loop by char
     
     # TODO: Check if char is letter/figure/other character
     
