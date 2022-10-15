@@ -8,10 +8,18 @@ import sys
 import os
 
 def getReportData(filePath):
+    numLines = 0
+    numChars = 0
+    numLetters = 0
+    numFigures = 0
+    numOtherCharacters = 0
+    numWords = 0
+    numWordsOfSize = list()
     
-    # TODO: Initialize counters
-    
-    # TODO: Open file and put into loop by line
+    with open(filePath) as f:
+        for line in f:
+            for char in line:
+                
     
     # TODO: Loop by char
     
