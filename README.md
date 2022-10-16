@@ -37,4 +37,4 @@ Sample output files are contained within ./TestDataFiles/Out/
 Note: Tests automatically remove any reports they created
 
 ## Time to Complete
-Code written in ~2.5hrs most of which was spent on planning, insuring clean code, writing tests, and thinking of potential problems
+Code written in ~2hrs most of which was spent on planning, insuring clean code, writing tests, and thinking of potential problems
