@@ -20,17 +20,14 @@ under the name TODO.txt inside of the Reports folder
 """
 __author__ = "Michael Feist"
 
-from curses.ascii import isalpha
 import sys
 import os
+import datetime
 
-def updateWordsOfSize(numWordsOfSize, wordSize):
-    try:
-        numWordsOfSize[wordSize] = numWordsOfSize[wordSize] + 1
-    except:
-        numWordsOfSize[wordSize] = 0
+def isAlpha(char):
+    return char.isalpha()
 
-def iswordseparator(char):
+def isWordSeparator(char):
     asciiValue = ord(char)
     if asciiValue == ord('\t') or asciiValue == ord('\n') \
         or asciiValue == ord(' ') or asciiValue == ord('\r'):
@@ -38,22 +35,29 @@ def iswordseparator(char):
     else:
         return False
 
-def isignoredchar(char):
+def isIgnoredChar(char):
     asciiValue = ord(char)
     if (asciiValue >= 0 and asciiValue <= 32) or (asciiValue == 127):
         return True
     else:
         return False
 
-def isfigure(char):
+def isFigure(char):
     asciiValue = ord(char)
     if (asciiValue >= ord('!') and asciiValue <= ord('/')) or (asciiValue >= ord(':') and asciiValue <= ord('@')) \
         or (asciiValue >= ord('[') and asciiValue <= ord('`')) or (asciiValue >= ord('{') and asciiValue <= ord('~')):
             return True
     else:
         return False
+    
+def updateWordsOfSize(numWordsOfSize, wordSize):
+    try:
+        numWordsOfSize[wordSize] = numWordsOfSize[wordSize] + 1
+    except:
+        numWordsOfSize[wordSize] = 0
 
 def getReportData(filePath):
+    fileName = os.path.normpath(filePath)
     numLines = 0
     numChars = 0
     numLetters = 0
@@ -65,57 +69,71 @@ def getReportData(filePath):
     with open(filePath, 'r') as f:
         for line in f:
             
+            numLines += 1
             currentWordSize = 0
             inWord = False
             
             for char in line:
                 
-                dontCountChar = isignoredchar(char)
+                shouldCountChar = not isIgnoredChar(char)
                 
-                if isalpha(char):
+                if isAlpha(char):
                     numLetters += 1
                     currentWordSize += 1
                     inWord = True
-                elif isfigure(char):
+                elif isFigure(char):
                     numFigures += 1
-                elif not dontCountChar:
+                elif shouldCountChar:
                     numOtherCharacters += 1
                     
-                if not dontCountChar:
+                if shouldCountChar:
                     numChars += 1
                     
-                if inWord and iswordseparator(char):
+                if inWord and isWordSeparator(char):
                     numWords += 1
                     updateWordsOfSize(numWordsOfSize, currentWordSize)
                     currentWordSize = 0
                     inWord = False
-                    
-    # TODO: Add logic for checking word count
     
-    # TODO: Return dictionary of each count
-    pass
+    return {"File Name" : fileName, "Line Count" : numLines, "Char Count" : numChars, \
+        "Letter Count" : numLetters, "Figure Count" : numFigures, \
+        "Other Char Count" : numOtherCharacters, "Word Count" : numWords, \
+        "Words of Size" : numWordsOfSize}
 
 def writeAttributeCount(attributeName, count, file):
-    pass
+    file.write(f'Number of {attributeName}: {count}')
 
 def writeReport(reportData):
+    currentDate = datetime.datetime.now()
     
-    # TODO: Open file
+    reportFileName = f'.\Reports\{os.path.basename(reportData["File Name"])}_\
+        report_{currentDate.month}_{currentDate.day}_{currentDate.year}'
     
-    # TODO: Write lines
-    pass
+    with open(reportFileName, 'w') as f:
+        f.write(f'File name: {os.path.abspath(reportData["File Name"])}\n')
+        writeAttributeCount('lines', reportData["Line Count"], f)
+        writeAttributeCount('characters (total)', reportData["Char Count"], f)
+        writeAttributeCount('letters', reportData["Letter Count"], f)
+        writeAttributeCount('figures', reportData["Figure Count"], f)
+        writeAttributeCount('other characters', reportData["Other Char Count"], f)
+        writeAttributeCount('words', reportData["Word Count"], f)
+        for wordSize in reportData["Words of Size"]:
+            writeAttributeCount(f'{wordSize} letter words', reportData["Words of Size"][wordSize], f)
 
 if __name__ == "__main__":
-    # TODO: Check for no arguments given
+    if len(sys.argv) != 1:
+        print('FileReporter must have one and only one argument')
+        exit(1)
+        
     try:
         reportData = getReportData(sys.argv[0])
         print(reportData)
     except:
-        # TODO: Handle file exceptions
-        pass
+        print('Problem opening read file\n')
+        exit(1)
     
     try:
         writeReport(reportData)
     except:
-        # TODO: Handle file exceptions
-        pass
+        print('Problem opening write file\n')
+        exit(1)
